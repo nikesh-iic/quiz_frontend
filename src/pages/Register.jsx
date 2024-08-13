@@ -1,4 +1,11 @@
 const Register = () => {
+
+
+  const handleRegister=(e)=>{
+    // e.preventDefault();
+      console.log(userInfo);
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="p-4 space-y-6 bg-white w-96">
@@ -55,7 +62,7 @@ const Register = () => {
               className="mt-3 p-2 w-full border"
             />
           </div>
-          <button className="p-2 w-full border bg-indigo-500 text-white">
+          <button className="p-2 w-full border bg-indigo-500 text-white" onClick={handleRegister}>
             Register
           </button>
         </div>
