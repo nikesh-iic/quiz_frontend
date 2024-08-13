@@ -1,12 +1,6 @@
 import { useState } from "react";
 
 const Register = () => {
-
-
-  const handleRegister=(e)=>{
-    // e.preventDefault();
-      console.log(userInfo);
-  }
   const [userInfo, setUserInfo] = useState({
     username: "",
     email: "",
@@ -14,15 +8,60 @@ const Register = () => {
     password2: "",
   });
 
+  // Single state object for holding all errors
+  const [errors, setErrors] = useState({});
+
   const handleUserInfoChange = (e) => {
-    setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUserInfo({ ...userInfo, [name]: value });
   };
 
-  const handleRegister = (e) => {
-    e.preventDefault();
-    console.log(userInfo);
+  // Function to validate form
+  const validateForm = () => {
+    let newErrors = {};
+
+    // Validate username
+    if (userInfo.username.trim() === "") {
+      newErrors.username = "Username cannot be empty.";
+    } else {
+      delete newErrors.username;
+    }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userInfo.email)) {
+      newErrors.email = "Invalid email address.";
+    } else {
+      delete newErrors.email;
+    }
+
+    // Validate password1
+    if (userInfo.password1.trim() === "") {
+      newErrors.password1 = "Password cannot be empty.";
+    } else {
+      delete newErrors.password1;
+    }
+
+    // Validate password2
+    if (userInfo.password1 !== userInfo.password2) {
+      newErrors.password2 = "Passwords do not match.";
+    } else {
+      delete newErrors.password2;
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-  
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateForm()) {
+      return; // Do not proceed if form is invalid
+    }
+    // Proceed with form submission logic here
+    console.log("Form submitted successfully!");
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="p-4 space-y-6 bg-white w-96">
@@ -44,6 +83,9 @@ const Register = () => {
               value={userInfo.username}
               onChange={handleUserInfoChange}
             />
+            {errors.username && (
+              <p className="text-red-500">{errors.username}</p>
+            )}
           </div>
           <div>
             <label htmlFor="email" className="block font-medium text-gray-700">
@@ -56,6 +98,7 @@ const Register = () => {
               value={userInfo.email}
               onChange={handleUserInfoChange}
             />
+            {errors.email && <p className="text-red-500">{errors.email}</p>}
           </div>
           <div>
             <label
@@ -71,6 +114,9 @@ const Register = () => {
               value={userInfo.password1}
               onChange={handleUserInfoChange}
             />
+            {errors.password1 && (
+              <p className="text-red-500">{errors.password1}</p>
+            )}
           </div>
           <div>
             <label
@@ -86,15 +132,16 @@ const Register = () => {
               value={userInfo.password2}
               onChange={handleUserInfoChange}
             />
+            {errors.password2 && (
+              <p className="text-red-500">{errors.password2}</p>
+            )}
           </div>
-<<<<<<< HEAD
-          <button className="p-2 w-full border bg-indigo-500 text-white" onClick={handleRegister}>
-=======
+          {/* Input fields remain unchanged */}
           <button
+            type="submit"
             className="p-2 w-full border bg-indigo-500 text-white"
-            onClick={handleRegister}
+            onClick={handleSubmit}
           >
->>>>>>> 0b77ebd620691072257002766f6403b7118b2638
             Register
           </button>
         </div>
