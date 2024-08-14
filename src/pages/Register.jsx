@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { register } from "../services/auth";
 
 const Register = () => {
   const [userInfo, setUserInfo] = useState({
@@ -8,13 +10,47 @@ const Register = () => {
     password2: "",
   });
 
+  const [errors, setErrors] = useState({});
+
+  const navigate = useNavigate();
+
   const handleUserInfoChange = (e) => {
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
   };
 
-  const handleRegister = (e) => {
+  const validateData = () => {
+    const newError = {};
+    // checked username
+    if (userInfo.username.trim() === "") {
+      newError.username = "Username cannot be empty!";
+    } else {
+      delete errors.username;
+    }
+
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!userInfo.email.match(pattern)) {
+      newError.email = "Enter a valid email";
+    } else {
+      delete errors.email;
+    }
+
+    setErrors({ ...newError });
+    return Object.keys(newError).length === 0;
+  };
+
+  const handleRegister = async (e) => {
     e.preventDefault();
-    console.log(userInfo);
+    if (validateData()) {
+      const message = await register(userInfo);
+      if (message.error) {
+        console.log(message.message);
+        return;
+      }
+      navigate("/verification-sent");
+    } else {
+      console.log(errors);
+      console.log("Invalid data");
+    }
   };
 
   return (
@@ -38,6 +74,9 @@ const Register = () => {
               value={userInfo.username}
               onChange={handleUserInfoChange}
             />
+            {errors.username && (
+              <p className="text-red-600">{errors.username}</p>
+            )}
           </div>
           <div>
             <label htmlFor="email" className="block font-medium text-gray-700">
@@ -87,6 +126,12 @@ const Register = () => {
           >
             Register
           </button>
+          <p className="text-sm">
+            Already have an account?{" "}
+            <Link to="/login" className="text-blue-600">
+              Login
+            </Link>
+          </p>
         </div>
       </div>
     </div>
