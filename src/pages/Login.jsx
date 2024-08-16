@@ -1,30 +1,38 @@
-import * as Yup from "yup";
 import { Formik } from "formik";
-import { Link } from "react-router-dom";
-const Login = () => {
-  const validationSchema = Yup.object().shape({
-    email: Yup.string().email("Invalid email").required("Email is required"),
-    password1: Yup.string()
-      .min(8, "Password must be at least 8 characters")
-      .required("Password is required"),
+import * as Yup from "yup";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../services/auth";
 
-    //   confirmpassword = Yup.string().oneOF([Yup.ref('password1'), null], 'Passwords must match')
+const Login = () => {
+  const navigate = useNavigate();
+  const validationSchema = Yup.object().shape({
+    username: Yup.string("Invalid username !").required(
+      "Username is required."
+    ),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters.")
+      .required("Password is required."),
   });
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-center text-3xl font-semibold mb-6 text-gray-800">
+      <div className="bg-white rounded-lg shadow-md w-full max-w-md p-8">
+        <h1 className="text-center text-3xl font-bold text-gray-800 mb-6">
           Login
         </h1>
         <Formik
           initialValues={{
-            email: "",
-            password1: "",
+            username: "",
+            password: "",
           }}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
-            console.log(values);
+          onSubmit={async (values) => {
+            const res = await login(values);
+            if (res.error) {
+              console.log(res.message);
+              return;
+            }
+            navigate("/");
           }}
         >
           {({
@@ -35,62 +43,75 @@ const Login = () => {
             handleBlur,
             handleSubmit,
           }) => (
-            <form>
-              {" "}
+            <form onSubmit={handleSubmit}>
               <div className="mb-6">
                 <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Email
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-                    placeholder="Enter your email"
-                    onChange={handleChange("email")}
-                    onBlur={handleBlur("email")}
-                  />
+                  Username
                 </label>
+                <input
+                  type="text"
+                  name="username"
+                  className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your username"
+                  onChange={handleChange("username")}
+                  onBlur={handleBlur("username")}
+                  value={values.username}
+                />
+                {errors.username && touched.username && (
+                  <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+                )}
               </div>
-              {errors.email && touched.email && (
-                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-              )}
               <div className="mb-6">
                 <label
-                  htmlFor="password1"
-                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Password
-                  <input
-                    type="password"
-                    name="password1"
-                    id="password1"
-                    className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-                    placeholder="Enter your password"
-                    onChange={handleChange("password1")}
-                  />
                 </label>
+                <input
+                  type="password"
+                  name="password"
+                  className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your password"
+                  onChange={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  value={values.password}
+                />
               </div>
-              <div>
+              <div className="mb-6">
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white p-3 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-                  onClick={handleSubmit}
+                  className="w-full bg-purple-500 text-white p-3 rounded-lg shadow hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-150 ease-in-out"
                 >
                   Login
                 </button>
               </div>
+              <div className="text-center text-sm">
+                <p className="mb-2">
+                  Don't have an account?{" "}
+                  <Link
+                    to="/register"
+                    className="text-blue-500 hover:underline"
+                  >
+                    Register
+                  </Link>
+                </p>
+                <p>
+                  Forgot your password?{" "}
+                  <Link
+                    to="/forgot-password"
+                    className="text-blue-500 hover:underline"
+                  >
+                    Reset Password
+                  </Link>
+                </p>
+              </div>
             </form>
           )}
         </Formik>
-        <p className="text-sm mt-3">
-          Don&#39;t have an account?
-          <Link to="/register" className="text-blue-600">
-            Register
-          </Link>
-        </p>
       </div>
     </div>
   );

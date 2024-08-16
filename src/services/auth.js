@@ -21,12 +21,12 @@ export const register = async (registerInfo) => {
 };
 
 export const verifyEmail = async (token) => {
-  const response = await fetch(`${AUTH_URL}verify-email`, {
+  const response = await fetch(`${AUTH_URL}verify-email/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: { key: token },
+    body: JSON.stringify({ key: token }),
   });
 
   const jsonResponse = await response.json();
@@ -35,5 +35,24 @@ export const verifyEmail = async (token) => {
     return { error: true, message: jsonResponse };
   }
 
+  return { error: false, message: jsonResponse };
+};
+
+export const login = async (loginInfo) => {
+  const response = await fetch(`${AUTH_URL}login/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(loginInfo),
+  });
+
+  const jsonResponse = await response.json();
+
+  if (!response.ok) {
+    return { error: true, message: jsonResponse };
+  }
+
+  localStorage.setItem("user", JSON.stringify(jsonResponse));
   return { error: false, message: jsonResponse };
 };
