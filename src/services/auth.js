@@ -19,3 +19,21 @@ export const register = async (registerInfo) => {
 
   return { error: false, message: jsonResponse };
 };
+
+export const verifyEmail = async (token) => {
+  const response = await fetch(`${AUTH_URL}verify-email`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: { key: token },
+  });
+
+  const jsonResponse = await response.json();
+
+  if (!response.ok) {
+    return { error: true, message: jsonResponse };
+  }
+
+  return { error: false, message: jsonResponse };
+};

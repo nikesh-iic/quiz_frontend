@@ -11,6 +11,7 @@ const Register = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -43,13 +44,10 @@ const Register = () => {
     if (validateData()) {
       const message = await register(userInfo);
       if (message.error) {
-        console.log(message.message);
+        setServerError(message.message);
         return;
       }
       navigate("/verification-sent");
-    } else {
-      console.log(errors);
-      console.log("Invalid data");
     }
   };
 
@@ -77,6 +75,9 @@ const Register = () => {
             {errors.username && (
               <p className="text-red-600">{errors.username}</p>
             )}
+            {serverError?.username && (
+              <p className="text-red-600">{serverError.username[0]}</p>
+            )}
           </div>
           <div>
             <label htmlFor="email" className="block font-medium text-gray-700">
@@ -89,6 +90,9 @@ const Register = () => {
               value={userInfo.email}
               onChange={handleUserInfoChange}
             />
+            {serverError?.email && (
+              <p className="text-red-600">{serverError.email[0]}</p>
+            )}
           </div>
           <div>
             <label
@@ -104,6 +108,9 @@ const Register = () => {
               value={userInfo.password1}
               onChange={handleUserInfoChange}
             />
+            {serverError?.password1 && (
+              <p className="text-red-600">{serverError.password1[0]}</p>
+            )}
           </div>
           <div>
             <label
@@ -119,6 +126,9 @@ const Register = () => {
               value={userInfo.password2}
               onChange={handleUserInfoChange}
             />
+            {serverError?.password2 && (
+              <p className="text-red-600">{serverError.password2[0]}</p>
+            )}
           </div>
           <button
             className="p-2 w-full border bg-indigo-500 text-white"
