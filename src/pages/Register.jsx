@@ -3,6 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { register } from "../services/auth";
 
 const Register = () => {
+
+
+  const handleRegister=(e)=>{
+    // e.preventDefault();
+      console.log(userInfo);
+  }
   const [userInfo, setUserInfo] = useState({
     username: "",
     email: "",
@@ -50,7 +56,7 @@ const Register = () => {
       navigate("/verification-sent");
     }
   };
-
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="p-4 space-y-6 bg-white w-96">
@@ -130,10 +136,14 @@ const Register = () => {
               <p className="text-red-600">{serverError.password2[0]}</p>
             )}
           </div>
+<<<<<<< HEAD
+          <button className="p-2 w-full border bg-indigo-500 text-white" onClick={handleRegister}>
+=======
           <button
             className="p-2 w-full border bg-indigo-500 text-white"
             onClick={handleRegister}
           >
+>>>>>>> 0b77ebd620691072257002766f6403b7118b2638
             Register
           </button>
           <p className="text-sm">
