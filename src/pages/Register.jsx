@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { register } from "../services/auth";
 
 const Register = () => {
 
@@ -14,13 +16,45 @@ const Register = () => {
     password2: "",
   });
 
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState(null);
+
+  const navigate = useNavigate();
+
   const handleUserInfoChange = (e) => {
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
   };
 
-  const handleRegister = (e) => {
+  const validateData = () => {
+    const newError = {};
+    // checked username
+    if (userInfo.username.trim() === "") {
+      newError.username = "Username cannot be empty!";
+    } else {
+      delete errors.username;
+    }
+
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!userInfo.email.match(pattern)) {
+      newError.email = "Enter a valid email";
+    } else {
+      delete errors.email;
+    }
+
+    setErrors({ ...newError });
+    return Object.keys(newError).length === 0;
+  };
+
+  const handleRegister = async (e) => {
     e.preventDefault();
-    console.log(userInfo);
+    if (validateData()) {
+      const message = await register(userInfo);
+      if (message.error) {
+        setServerError(message.message);
+        return;
+      }
+      navigate("/verification-sent");
+    }
   };
   
   return (
@@ -44,6 +78,12 @@ const Register = () => {
               value={userInfo.username}
               onChange={handleUserInfoChange}
             />
+            {errors.username && (
+              <p className="text-red-600">{errors.username}</p>
+            )}
+            {serverError?.username && (
+              <p className="text-red-600">{serverError.username[0]}</p>
+            )}
           </div>
           <div>
             <label htmlFor="email" className="block font-medium text-gray-700">
@@ -56,6 +96,9 @@ const Register = () => {
               value={userInfo.email}
               onChange={handleUserInfoChange}
             />
+            {serverError?.email && (
+              <p className="text-red-600">{serverError.email[0]}</p>
+            )}
           </div>
           <div>
             <label
@@ -71,6 +114,9 @@ const Register = () => {
               value={userInfo.password1}
               onChange={handleUserInfoChange}
             />
+            {serverError?.password1 && (
+              <p className="text-red-600">{serverError.password1[0]}</p>
+            )}
           </div>
           <div>
             <label
@@ -86,6 +132,9 @@ const Register = () => {
               value={userInfo.password2}
               onChange={handleUserInfoChange}
             />
+            {serverError?.password2 && (
+              <p className="text-red-600">{serverError.password2[0]}</p>
+            )}
           </div>
 <<<<<<< HEAD
           <button className="p-2 w-full border bg-indigo-500 text-white" onClick={handleRegister}>
@@ -97,6 +146,12 @@ const Register = () => {
 >>>>>>> 0b77ebd620691072257002766f6403b7118b2638
             Register
           </button>
+          <p className="text-sm">
+            Already have an account?{" "}
+            <Link to="/login" className="text-blue-600">
+              Login
+            </Link>
+          </p>
         </div>
       </div>
     </div>
